@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useRecipes } from '../../hooks/useRecipes';
 import { Pencil, Trash2, Plus } from 'lucide-react';
+import { supabase } from "../../lib/supabaseClient";
 
 const AdminRecipes = () => {
   const { recipes, addRecipe, updateRecipe, deleteRecipe } = useRecipes();
@@ -28,7 +29,30 @@ const AdminRecipes = () => {
     const file = e.target.files?.[0];
     if (file) {
       // Handle image upload to Supabase storage
-      // Update currentRecipe.image_url with the uploaded image URL
+      // Update currentProduct.image_url with the uploaded image URL
+      const fileName = `${Date.now()}-${file.name}`;
+
+      // Subir la imagen a Supabase Storage
+      const { data, error } = await supabase.storage.from("product-images").upload(fileName, file);
+
+      if (error) {
+        console.error("Error al subir la imagen:", error);
+        return;
+      }
+
+      // Obtener la URL pública de la imagen
+      const result = supabase.storage.from("product-images").getPublicUrl(fileName);
+
+      // Actualizar currentProduct.image_url con la URL pública
+      if (result.data.publicUrl) {
+        setCurrentRecipe((newReceipe) => ({
+          ...newReceipe,
+          image_url: result.data.publicUrl
+        }));
+        // currentProduct.image_url = result.data.publicUrl;
+      } else {
+
+      }
     }
   };
 

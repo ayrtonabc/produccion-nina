@@ -30,10 +30,11 @@ export function useEvents() {
     setEvents(data || []);
   }
 
-  async function addEvent(event: Omit<Event, 'id'>) {
+  async function addEvent(event: Event) {
+    const { id, ...eventWithoutId } = event;
     const { error } = await supabase
       .from('events')
-      .insert([event]);
+      .insert([eventWithoutId]);
 
     if (error) {
       console.error('Error adding event:', error);

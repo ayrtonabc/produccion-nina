@@ -7,7 +7,7 @@ interface Recipe {
   content: string;
   image_url: string;
   youtube_url: string;
-  created_at: string;
+  created_at?: string;
 }
 
 export function useRecipes() {
@@ -31,10 +31,11 @@ export function useRecipes() {
     setRecipes(data || []);
   }
 
-  async function addRecipe(recipe: Omit<Recipe, 'id' | 'created_at'>) {
+  async function addRecipe(recipe: Recipe) {
+    const { id, created_at, ...recipeWithoutId } = recipe;
     const { error } = await supabase
       .from('recipes')
-      .insert([recipe]);
+      .insert([recipeWithoutId]);
 
     if (error) {
       console.error('Error adding recipe:', error);

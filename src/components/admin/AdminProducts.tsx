@@ -47,11 +47,6 @@ const AdminProducts = () => {
       // Obtener la URL pública de la imagen
       const result = supabase.storage.from("product-images").getPublicUrl(fileName);
 
-      // if (publicUrlError) {
-      //   console.error("Error al obtener la URL pública:", publicUrlError);
-      //   return;
-      // }
-
       // Actualizar currentProduct.image_url con la URL pública
       if (result.data.publicUrl) {
         setCurrentProduct((prevProduct) => ({

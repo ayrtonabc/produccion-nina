@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useEvents } from '../../hooks/useEvents';
 import { Pencil, Trash2, Plus, MapPin } from 'lucide-react';
+import { supabase } from "../../lib/supabaseClient";
 
 const AdminEvents = () => {
   const { events, addEvent, updateEvent, deleteEvent } = useEvents();
@@ -28,7 +29,29 @@ const AdminEvents = () => {
     const file = e.target.files?.[0];
     if (file) {
       // Handle image upload to Supabase storage
-      // Update currentEvent.image_url with the uploaded image URL
+      // Update currentProduct.image_url with the uploaded image URL
+      const fileName = `${Date.now()}-${file.name}`;
+
+      // Subir la imagen a Supabase Storage
+      const { data, error } = await supabase.storage.from("product-images").upload(fileName, file);
+
+      if (error) {
+        console.error("Error al subir la imagen:", error);
+        return;
+      }
+
+      // Obtener la URL pública de la imagen
+      const result = supabase.storage.from("product-images").getPublicUrl(fileName);
+
+      // Actualizar currentProduct.image_url con la URL pública
+      if (result.data.publicUrl) {
+        setCurrentEvent((newEvent) => ({
+          ...newEvent,
+          image_url: result.data.publicUrl
+        }));
+      } else {
+
+      }
     }
   };
 
