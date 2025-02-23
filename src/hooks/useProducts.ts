@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabaseClient';
+import { supabase } from '../lib/supabaseClient'
 
 interface Product {
   id: string;
@@ -30,10 +30,11 @@ export function useProducts() {
     setProducts(data || []);
   }
 
-  async function addProduct(product: Omit<Product, 'id'>) {
+  async function addProduct(product: Product) {
+    const { id, ...productWithoutId } = product;
     const { error } = await supabase
       .from('products')
-      .insert([product]);
+      .insert([productWithoutId]);
 
     if (error) {
       console.error('Error adding product:', error);
